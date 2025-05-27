@@ -1,0 +1,421 @@
+{% extends "base.html" %}
+
+{% block title %}Power Plant Performance Predictor - AI Dashboard{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8">                <div class="hero-content">
+                    <h1 class="hero-title display-3 mb-4 text-gradient">Power Plant Predictor</h1>
+                    <p class="hero-subtitle lead mb-4">
+                        Cutting-edge AI technology for precise power plant performance predictions
+                    </p>
+                    <div class="hero-badges d-flex gap-4 mb-4">
+                        <div class="hero-badge">
+                            <i class="fas fa-brain fa-2x mb-2"></i>
+                            <span>96.41% Accuracy</span>
+                        </div>
+                        <div class="hero-badge">
+                            <i class="fas fa-bolt fa-2x mb-2"></i>
+                            <span>Real-time Analysis</span>
+                        </div>
+                        <div class="hero-badge">
+                            <i class="fas fa-chart-line fa-2x mb-2"></i>
+                            <span>Smart Insights</span>
+                        </div>
+                    </div>
+                    <a href="#prediction-form" class="btn btn-primary btn-lg px-5 py-3 rounded-pill">
+                        <i class="fas fa-calculator me-2"></i> Start Predicting
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-4 text-center">
+                <i class="fas fa-industry" style="font-size: 8rem; opacity: 0.3;"></i>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Feature Cards -->
+<section class="py-5">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="feature-card text-center">
+                    <div class="feature-icon bg-primary mx-auto">
+                        <i class="fas fa-brain"></i>
+                    </div>                    <h4>AI-Powered Predictions</h4>
+                    <p>Random Forest model with polynomial features achieving 96.41% accuracy (R² Score) in power output predictions.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card text-center">
+                    <div class="feature-icon bg-success mx-auto">
+                        <i class="fas fa-tachometer-alt"></i>
+                    </div>
+                    <h4>Real-time Analytics</h4>
+                    <p>Instant performance metrics including efficiency, heat rate, and fuel consumption calculations.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card text-center">
+                    <div class="feature-icon bg-warning mx-auto">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <h4>Performance Optimization</h4>
+                    <p>Identify optimal operating conditions to maximize power output and minimize fuel consumption.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Model Performance -->
+<section class="py-5 model-performance-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 mb-4 mb-lg-0">
+                <div class="performance-content">
+                    <h2 class="section-title display-4 mb-4">Model Performance</h2>
+                    <div class="stats-list">
+                        <div class="stat-item d-flex align-items-center mb-3">
+                            <div class="stat-icon text-primary me-3"><i class="fas fa-bullseye"></i></div>
+                            <div>
+                                <div class="stat-value">96.41%</div>
+                                <div class="stat-label">R² Score</div>
+                            </div>
+                        </div>
+                        <div class="stat-item d-flex align-items-center mb-3">
+                            <div class="stat-icon text-success me-3"><i class="fas fa-chart-bar"></i></div>
+                            <div>
+                                <div class="stat-value">3.23</div>
+                                <div class="stat-label">RMSE (MW)</div>
+                            </div>
+                        </div>
+                        <div class="stat-item d-flex align-items-center mb-3">
+                            <div class="stat-icon text-warning me-3"><i class="fas fa-tree"></i></div>
+                            <div>
+                                <div class="stat-value">100</div>
+                                <div class="stat-label">Trees</div>
+                            </div>
+                        </div>
+                        <div class="stat-item d-flex align-items-center">
+                            <div class="stat-icon text-info me-3"><i class="fas fa-code-branch"></i></div>
+                            <div>
+                                <div class="stat-value">15</div>
+                                <div class="stat-label">Max Depth</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="performance-visualization">
+                    <div class="card glass-card">
+                        <div class="card-body">
+                            <img src="{{ url_for('static', filename='prediction_performance.png') }}" 
+                                 class="img-fluid rounded shadow" 
+                                 alt="Model Prediction Performance">
+                            <div class="overlay-caption">
+                                <h5>Prediction Accuracy Visualization</h5>
+                                <p>Actual vs Predicted Power Output</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Prediction Form -->
+<section id="prediction-form" class="py-5 prediction-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="prediction-form glass-card">
+                    <h2 class="section-title text-center text-gradient mb-4">Predict Power Output</h2>
+                    <p class="text-center lead mb-5">Enter environmental parameters to predict power plant performance</p>
+                    
+                    {% if not model_loaded %}
+                    <div class="alert alert-warning" role="alert">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <strong>Model Not Available:</strong> Please ensure the trained model files are present in the models directory.
+                    </div>
+                    {% endif %}
+
+                    <form id="predictionForm" {% if not model_loaded %}style="opacity: 0.5; pointer-events: none;"{% endif %}>
+                        <div class="row g-3">                            <div class="col-md-6">
+                                <label for="at" class="form-label">
+                                    <i class="fas fa-thermometer-half text-danger"></i>
+                                    Ambient Temperature (°C)
+                                </label>
+                                <input type="number" class="form-control" id="at" name="at" 
+                                       value="20.0" step="0.1" required>
+                                <small class="form-text text-muted">Typical range: 1.81°C to 37.11°C</small>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="v" class="form-label">
+                                    <i class="fas fa-wind text-info"></i>
+                                    Exhaust Vacuum (cm Hg)
+                                </label>
+                                <input type="number" class="form-control" id="v" name="v" 
+                                       value="40.0" step="0.1" required>
+                                <small class="form-text text-muted">Typical range: 25.36 to 81.56 cm Hg</small>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="ap" class="form-label">
+                                    <i class="fas fa-weight text-primary"></i>
+                                    Ambient Pressure (millibar)
+                                </label>
+                                <input type="number" class="form-control" id="ap" name="ap" 
+                                       value="1013.0" step="0.1" required>
+                                <small class="form-text text-muted">Typical range: 992.89 to 1033.30 millibar</small>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="rh" class="form-label">
+                                    <i class="fas fa-tint text-success"></i>
+                                    Relative Humidity (%)
+                                </label>
+                                <input type="number" class="form-control" id="rh" name="rh" 
+                                       value="70.0" step="0.1" required>
+                                <small class="form-text text-muted">Typical range: 25.56% to 100.16%</small>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center mt-4">
+                            <button type="submit" class="btn btn-predict btn-lg" id="predictButton">
+                                <i class="fas fa-calculator"></i>
+                                Predict Power Output
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- Loading Spinner -->
+                    <div class="loading-spinner" id="loadingSpinner">
+                        <div class="spinner-grow text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-3">Analyzing power plant parameters...</p>
+                    </div>
+
+                    <!-- Results Section -->
+                    <div class="results-card" id="resultsSection" style="display: none;">
+                        <h3 class="text-center mb-4">
+                            <i class="fas fa-chart-line"></i>
+                            Prediction Results
+                        </h3>
+                        
+                        <div class="row g-4" id="metricsContainer">
+                            <!-- Metrics will be populated by JavaScript -->
+                        </div>
+                        
+                        <div class="mt-4 p-4 bg-light rounded-lg border border-light">
+                            <h5 class="d-flex align-items-center gap-2 mb-3">
+                                <i class="fas fa-info-circle text-primary"></i>
+                                Analysis Summary
+                            </h5>
+                            <p id="analysisSummary" class="mb-0"></p>
+                        </div>
+                        
+                        <div class="text-center mt-4">
+                            <button type="button" class="btn btn-outline-primary" onclick="document.getElementById('predictionForm').reset()">
+                                <i class="fas fa-redo"></i>
+                                New Prediction
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.getElementById('predictionForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const loadingSpinner = document.getElementById('loadingSpinner');
+    const resultsSection = document.getElementById('resultsSection');
+    const form = this;
+    
+    // Show loading spinner
+    if (loadingSpinner) {
+        loadingSpinner.style.display = 'block';
+        loadingSpinner.style.opacity = '1';
+    }
+    
+    // Disable form while processing
+    Array.from(form.elements).forEach(element => element.disabled = true);
+    
+    try {
+        // Format the form data
+        const formData = new FormData();
+        formData.append('at', parseFloat(form.at.value));
+        formData.append('v', parseFloat(form.v.value));
+        formData.append('ap', parseFloat(form.ap.value));
+        formData.append('rh', parseFloat(form.rh.value));
+        
+        const response = await fetch('/predict', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const data = await response.json();
+        
+        if (data.status === 'success') {
+            displayResults(data);
+        } else {
+            showError(data.message || 'An unexpected error occurred');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        showError('Network error: Please check your connection and try again');
+    } finally {
+        // Re-enable form
+        Array.from(form.elements).forEach(element => element.disabled = false);
+        
+        // Hide loading spinner
+        if (loadingSpinner) {
+            loadingSpinner.style.opacity = '0';
+            setTimeout(() => loadingSpinner.style.display = 'none', 300);
+        }
+    }
+});
+
+function displayResults(data) {
+    const metricsContainer = document.getElementById('metricsContainer');
+    const resultsSection = document.getElementById('resultsSection');
+    
+    if (!metricsContainer || !resultsSection) {
+        console.error('Required DOM elements not found');
+        return;
+    }
+
+    const performanceClass = `badge-${data.performance_category.category.toLowerCase().replace(/\s+/g, '-')}`;
+    
+    // Hide results first to trigger animation
+    resultsSection.style.opacity = '0';
+    resultsSection.style.display = 'block';
+    
+    metricsContainer.innerHTML = `
+        <div class="col-md-6">
+            <div class="metric-card">
+                <div class="metric-icon text-primary">
+                    <i class="fas fa-bolt"></i>
+                </div>
+                <div class="metric-value text-primary">${data.prediction}</div>
+                <div class="metric-label">Power Output (MW)</div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="metric-card">
+                <div class="metric-icon text-success">
+                    <i class="fas fa-leaf"></i>
+                </div>
+                <div class="metric-value text-success">${data.efficiency}%</div>
+                <div class="metric-label">Efficiency</div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="metric-card">
+                <div class="metric-icon text-warning">
+                    <i class="fas fa-fire"></i>
+                </div>
+                <div class="metric-value text-warning">${data.heat_rate}</div>
+                <div class="metric-label">Heat Rate (Btu/kWh)</div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="metric-card">
+                <div class="metric-icon text-info">
+                    <i class="fas fa-gas-pump"></i>
+                </div>
+                <div class="metric-value text-info">${data.fuel_consumption}</div>
+                <div class="metric-label">Fuel Consumption (tons/hr)</div>
+            </div>
+        </div>
+    `;
+    
+    const analysisSummary = document.getElementById('analysisSummary');
+    analysisSummary.innerHTML = `
+        <div class="d-flex align-items-center gap-3 mb-3">
+            <strong>Performance Category:</strong> 
+            <span class="performance-badge ${performanceClass}">
+                <i class="fas fa-${data.performance_category.category === 'Optimal' ? 'check-circle' : 'info-circle'}"></i>
+                ${data.performance_category.category}
+            </span>
+        </div>
+        <p class="mb-2">Based on the input environmental conditions, the power plant is expected to generate 
+        <strong>${data.prediction} MW</strong> with an efficiency of <strong>${data.efficiency}%</strong>.</p>
+        <p class="mb-1">The heat rate of <strong>${data.heat_rate} Btu/kWh</strong> indicates 
+        ${data.performance_category.description}.</p>
+        <small class="text-muted mt-3 d-block">
+            <i class="fas fa-clock"></i> Prediction generated on ${data.timestamp}
+        </small>
+    `;
+    
+    // Fade in results
+    setTimeout(() => resultsSection.style.opacity = '1', 10);
+
+    // Scroll to results
+    resultsSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function showError(message) {
+    const resultsSection = document.getElementById('resultsSection');
+    if (!resultsSection) {
+        console.error('Results section not found');
+        return;
+    }
+
+    resultsSection.innerHTML = `
+        <div class="alert alert-danger d-flex align-items-center gap-3" role="alert">
+            <i class="fas fa-exclamation-circle fa-2x"></i>
+            <div>
+                <strong>Prediction Error</strong><br>
+                ${message}
+            </div>
+        </div>
+    `;
+    resultsSection.style.display = 'block';
+    resultsSection.style.opacity = '1';
+}
+
+// Add input validation and guidance
+document.querySelectorAll('input[type="number"]').forEach(input => {
+    const small = input.nextElementSibling;
+    if (!small || !small.classList.contains('form-text')) return;
+
+    input.addEventListener('input', function() {
+        const range = small.textContent.match(/\d+\.?\d* to \d+\.?\d*/);
+        if (!range) return;
+
+        const [min, max] = range[0].split(' to ').map(Number);
+        const value = Number(this.value);
+
+        // Update visual feedback
+        if (value < min || value > max) {
+            small.style.color = 'var(--warning)';
+            small.innerHTML = `
+                <i class="fas fa-exclamation-triangle"></i>
+                Value outside typical range (${min} to ${max})
+            `;
+        } else {
+            small.style.color = 'var(--success)';
+            small.innerHTML = `
+                <i class="fas fa-check-circle"></i>
+                Value within typical range
+            `;
+        }
+    });
+});
+</script>
+{% endblock %}
