@@ -53,5 +53,5 @@ The application is deployed on an **AWS EC2 instance** using Flask. Below are th
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/your-repo/SteamTurbinePerformancePredictor.git
+   git clone https://github.com/Epik-Whale463/Steam-Turbine-Performance-Predictor
    cd SteamTurbinePerformancePredictor
